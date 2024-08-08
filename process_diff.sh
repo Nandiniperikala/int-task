@@ -25,7 +25,12 @@ while IFS= read -r line; do
         cp "$file_path" "${deploy_package_path}/added/" 2>/dev/null
     elif [[ "$status" == "R" || "$status" == "D" ]]; then
         echo "$file_name" >> "$removed_file_path"
-        cp "$file_path" "${deploy_package_path}/removed/" 2>/dev/null
+        # Create a placeholder file for deleted files
+        if [[ "$status" == "D" ]]; then
+            touch "${deploy_package_path}/removed/$file_name"
+        elif [[ "$status" == "R" ]]; then
+            cp "$file_path" "${deploy_package_path}/removed/" 2>/dev/null
+        fi
     fi
 done < "$file_diff_path"
 
